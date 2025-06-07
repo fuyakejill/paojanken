@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>じゃんけんパオ</title>
+  <style>
+    body {
+      text-align: center;
+      font-family: sans-serif;
+      margin-top: 50px;
+    }
+
+    .hidden { display: none; }
+    .faded { opacity: 0.3; }
+    .disabled { pointer-events: none; }
+
+    img {
+      width: 250px;
+      height: 200px;
+      margin-top: 20px;
+    }
+
+    #resultImage {
+      margin-bottom: 60px;
+    }
+
+    button {
+      font-size: 24px;
+      margin: 10px;
+      padding: 10px 20px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 🔷 スタート画面 -->
+  <div id="startScreen">
+    <h1>パオとじゃんけんするﾊﾟｵ</h1>
+    <img src="start_pao.png" alt="スタート画像" />
+    <br />
+    <button onclick="startGame()">スタート</button>
+  </div>
+
+  <!-- 🔶 じゃんけん画面 -->
+  <div id="gameScreen" class="hidden">
+    <h1>じゃーんけーん…</h1>
+    <div>
+      <button id="btn-rock" onclick="play('グー')">✊ グー</button>
+      <button id="btn-scissors" onclick="play('チョキ')">✌️ チョキ</button>
+      <button id="btn-paper" onclick="play('パー')">🖐 パー</button>
+    </div>
+    <h2 id="result">ﾊﾟｵが勝つﾊﾟｵ</h2>
+    <img id="resultImage" src="paojan.gif" alt="パオの手" />
+
+    <!-- 🔁 もう一回ボタン -->
+    <div>
+      <button id="retryButton" class="hidden" onclick="resetButtons()">もう一回！</button>
+    </div>
+  </div>
+
+  <script>
+    function startGame() {
+      document.getElementById("startScreen").classList.add("hidden");
+      document.getElementById("gameScreen").classList.remove("hidden");
+      resetButtons(); // 初期化
+    }
+
+    function play(playerChoice) {
+      const choices = ['グー', 'チョキ', 'パー'];
+      const computerChoice = choices[Math.floor(Math.random() * 3)];
+
+      // 通常の勝敗判定
+      let result = '';
+      if (playerChoice === computerChoice) {
+        result = 'もっかいﾊﾟｵ';
+      } else if (
+        (playerChoice === 'グー' && computerChoice === 'チョキ') ||
+        (playerChoice === 'チョキ' && computerChoice === 'パー') ||
+        (playerChoice === 'パー' && computerChoice === 'グー')
+      ) {
+        result = 'まだ負けてないﾊﾟｵ';
+      } else {
+        result = 'ﾊﾟｵが最強ﾊﾟｵ！！！';
+      }
+
+      // コンピューターの手に対応する通常画像
+      let imgSrc = '';
+      if (computerChoice === 'グー') {
+        imgSrc = 'rock_pao.png';
+      } else if (computerChoice === 'チョキ') {
+        imgSrc = 'scissors_pao.png';
+      } else if (computerChoice === 'パー') {
+        imgSrc = 'paper_pao.png';
+      }
+
+      // ⭐ レア出現処理（20%の確率で）
+      if (Math.random() < 0.2) {
+        const rareData = [
+          { img: 'rare1_paomushi.png', text: 'ﾊﾟｵﾑｼﾋﾟｰｽ‼️' },
+          { img: 'rare2_wafers.png', text: 'ウエハちゃん……！？' },
+          { img: 'rare3_vanilla.png', text: 'バニもやる‼️' },
+          { img: 'rare4_chocomint.png', text: '話すことはないﾁｮﾐ' }
+        ];
+        const chosen = rareData[Math.floor(Math.random() * rareData.length)];
+        imgSrc = chosen.img;
+        result = chosen.text;
+      }
+
+      document.getElementById('result').textContent = result;
+      document.getElementById('resultImage').src = imgSrc;
+
+      // ボタン操作制限と見た目
+      const buttons = {
+        'グー': document.getElementById('btn-rock'),
+        'チョキ': document.getElementById('btn-scissors'),
+        'パー': document.getElementById('btn-paper')
+      };
+
+      for (const [choice, button] of Object.entries(buttons)) {
+        button.classList.add('disabled');
+        if (choice !== playerChoice) {
+          button.classList.add('faded');
+        }
+      }
+
+      // 「もう一回」ボタン表示
+      document.getElementById('retryButton').classList.remove('hidden');
+    }
+
+    function resetButtons() {
+      const buttonIds = ['btn-rock', 'btn-scissors', 'btn-paper'];
+      for (const id of buttonIds) {
+        const btn = document.getElementById(id);
+        btn.classList.remove('disabled');
+        btn.classList.remove('faded');
+      }
+
+      document.getElementById('result').textContent = 'ﾊﾟｵが勝つﾊﾟｵ';
+      document.getElementById('resultImage').src = 'paojan.gif';
+
+      document.getElementById('retryButton').classList.add('hidden');
+    }
+  </script>
+</body>
+</html>
