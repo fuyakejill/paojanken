@@ -2,33 +2,61 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>じゃんけんパオ</title>
   <style>
     body {
       text-align: center;
       font-family: sans-serif;
-      margin-top: 50px;
+      margin-top: 30px;
+      padding: 10px;
     }
 
     .hidden { display: none; }
-    .faded { opacity: 0.3; }
-    .disabled { pointer-events: none; }
 
     img {
       width: 250px;
-      height: 200px;
+      height: auto;
+      max-width: 90%;
       margin-top: 20px;
     }
 
-    #resultImage {
-      margin-bottom: 60px;
+    button {
+      font-size: 5vw;
+      padding: 2vw 4vw;
+      width: 80%;
+      max-width: 300px;
+      margin: 10px auto;
+      display: block;
+      cursor: pointer;
     }
 
-    button {
-      font-size: 24px;
-      margin: 10px;
-      padding: 10px 20px;
-      cursor: pointer;
+    #result {
+      font-size: 5vw;
+      margin: 20px;
+    }
+
+    .disabled {
+      opacity: 0.3;
+      pointer-events: none;
+    }
+
+    .spacer {
+      margin-top: 60px;
+    }
+
+    @media screen and (min-width: 600px) {
+      button {
+        font-size: 24px;
+      }
+
+      #result {
+        font-size: 20px;
+      }
+
+      img {
+        width: 250px;
+      }
     }
   </style>
 </head>
@@ -46,31 +74,37 @@
   <div id="gameScreen" class="hidden">
     <h1>じゃーんけーん…</h1>
     <div>
-      <button id="btn-rock" onclick="play('グー')">✊ グー</button>
-      <button id="btn-scissors" onclick="play('チョキ')">✌️ チョキ</button>
-      <button id="btn-paper" onclick="play('パー')">🖐 パー</button>
+      <button id="btnGoo" onclick="play('グー')">✊ グー</button>
+      <button id="btnChoki" onclick="play('チョキ')">✌️ チョキ</button>
+      <button id="btnPaa" onclick="play('パー')">🖐 パー</button>
     </div>
     <h2 id="result">ﾊﾟｵが勝つﾊﾟｵ</h2>
     <img id="resultImage" src="paojan.gif" alt="パオの手" />
-
-    <!-- 🔁 もう一回ボタン -->
-    <div>
-      <button id="retryButton" class="hidden" onclick="resetButtons()">もう一回！</button>
-    </div>
+    <div class="spacer"></div>
+    <button id="resetButton" class="hidden" onclick="resetGame()">もう一回</button>
   </div>
 
   <script>
     function startGame() {
       document.getElementById("startScreen").classList.add("hidden");
       document.getElementById("gameScreen").classList.remove("hidden");
-      resetButtons(); // 初期化
     }
 
     function play(playerChoice) {
       const choices = ['グー', 'チョキ', 'パー'];
       const computerChoice = choices[Math.floor(Math.random() * 3)];
 
-      // 通常の勝敗判定
+      const btnGoo = document.getElementById('btnGoo');
+      const btnChoki = document.getElementById('btnChoki');
+      const btnPaa = document.getElementById('btnPaa');
+
+      // 全ボタンを一度無効にし、押された以外を薄く
+      [btnGoo, btnChoki, btnPaa].forEach(btn => btn.classList.add('disabled'));
+      if (playerChoice === 'グー') btnGoo.classList.remove('disabled');
+      if (playerChoice === 'チョキ') btnChoki.classList.remove('disabled');
+      if (playerChoice === 'パー') btnPaa.classList.remove('disabled');
+
+      // 勝敗判定
       let result = '';
       if (playerChoice === computerChoice) {
         result = 'もっかいﾊﾟｵ';
@@ -84,63 +118,52 @@
         result = 'ﾊﾟｵが最強ﾊﾟｵ！！！';
       }
 
-      // コンピューターの手に対応する通常画像
-      let imgSrc = '';
-      if (computerChoice === 'グー') {
-        imgSrc = 'rock_pao.png';
-      } else if (computerChoice === 'チョキ') {
-        imgSrc = 'scissors_pao.png';
-      } else if (computerChoice === 'パー') {
-        imgSrc = 'paper_pao.png';
-      }
+      // レア画像の判定（30%の確率）
+      const rareChance = Math.random();
+      let rareImage = '';
+      let rareText = '';
 
-      // ⭐ レア出現処理（30%の確率で）
-      if (Math.random() < 0.3) {
-        const rareData = [
-          { img: 'rare1_paomushi.png', text: 'ﾊﾟｵﾑｼﾋﾟｰｽ‼️' },
-          { img: 'rare2_wafers.png', text: 'ウエハちゃん……！？' },
-          { img: 'rare3_vanilla.png', text: 'バニもやる‼️' },
-          { img: 'rare4_chocomint.png', text: '話すことはないﾁｮﾐ' }
+      if (rareChance < 0.3) {
+        const rares = [
+          { src: 'rare1.png', text: 'ﾊﾟｵﾑｼﾋﾟｰｽ‼️' },
+          { src: 'rare2.png', text: 'ウエハちゃん……！？' },
+          { src: 'rare3.png', text: 'バニもやる‼️' },
+          { src: 'rare4.png', text: '話すことはないﾁｮﾐ' }
         ];
-        const chosen = rareData[Math.floor(Math.random() * rareData.length)];
-        imgSrc = chosen.img;
-        result = chosen.text;
+        const selected = rares[Math.floor(Math.random() * rares.length)];
+        rareImage = selected.src;
+        rareText = selected.text;
       }
 
-      document.getElementById('result').textContent = result;
-      document.getElementById('resultImage').src = imgSrc;
+      const resultEl = document.getElementById('result');
+      const resultImg = document.getElementById('resultImage');
 
-      // ボタン操作制限と見た目
-      const buttons = {
-        'グー': document.getElementById('btn-rock'),
-        'チョキ': document.getElementById('btn-scissors'),
-        'パー': document.getElementById('btn-paper')
-      };
-
-      for (const [choice, button] of Object.entries(buttons)) {
-        button.classList.add('disabled');
-        if (choice !== playerChoice) {
-          button.classList.add('faded');
-        }
+      if (rareImage) {
+        resultEl.textContent = rareText;
+        resultImg.src = rareImage;
+      } else {
+        resultEl.textContent = result;
+        if (computerChoice === 'グー') resultImg.src = 'rock_pao.png';
+        else if (computerChoice === 'チョキ') resultImg.src = 'scissors_pao.png';
+        else if (computerChoice === 'パー') resultImg.src = 'paper_pao.png';
       }
 
-      // 「もう一回」ボタン表示
-      document.getElementById('retryButton').classList.remove('hidden');
+      document.getElementById('resetButton').classList.remove('hidden');
     }
 
-    function resetButtons() {
-      const buttonIds = ['btn-rock', 'btn-scissors', 'btn-paper'];
-      for (const id of buttonIds) {
-        const btn = document.getElementById(id);
-        btn.classList.remove('disabled');
-        btn.classList.remove('faded');
-      }
-
-      document.getElementById('result').textContent = 'ﾊﾟｵが勝つﾊﾟｵ';
+    function resetGame() {
+      document.getElementById('result').textContent = 'じゃーんけーん…';
       document.getElementById('resultImage').src = 'paojan.gif';
 
-      document.getElementById('retryButton').classList.add('hidden');
+      document.getElementById('resetButton').classList.add('hidden');
+
+      // ボタン再有効化
+      ['btnGoo', 'btnChoki', 'btnPaa'].forEach(id => {
+        const btn = document.getElementById(id);
+        btn.classList.remove('disabled');
+      });
     }
   </script>
 </body>
 </html>
+
