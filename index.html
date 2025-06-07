@@ -64,7 +64,7 @@
 
   <!-- 🔷 スタート画面 -->
   <div id="startScreen">
-    <h1>パオとじゃんけんするﾊﾟｵ</h1>
+    <h1>パオとじゃんけんﾊﾟｵ</h1>
     <img src="start_pao.png" alt="スタート画像" />
     <br />
     <button onclick="startGame()">スタート</button>
@@ -125,10 +125,10 @@
 
       if (rareChance < 0.3) {
         const rares = [
-          { src: 'rare1.png', text: 'ﾊﾟｵﾑｼﾋﾟｰｽ‼️' },
-          { src: 'rare2.png', text: 'ウエハちゃん……！？' },
-          { src: 'rare3.png', text: 'バニもやる‼️' },
-          { src: 'rare4.png', text: '話すことはないﾁｮﾐ' }
+          { src: 'rare1_paomushi.png', text: 'ﾊﾟｵﾑｼﾋﾟｰｽ‼️' },
+          { src: 'rare2_wafers.png', text: 'ウエハちゃん……！？' },
+          { src: 'rare3_vanilla.png', text: 'バニもやる‼️' },
+          { src: 'rare4_chocomint.png', text: '話すことはないﾁｮﾐ' }
         ];
         const selected = rares[Math.floor(Math.random() * rares.length)];
         rareImage = selected.src;
